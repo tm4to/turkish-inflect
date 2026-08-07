@@ -1,5 +1,5 @@
 import { isVowel, isFrontVowel, isHardConsonant, isDiscontinuousHardConsonant } from "./utils";
-
+import { SOFTENING_EXCEPTIONS } from "./irregulars";
 /**
  * Represents a single Turkish word and its phonological state as suffixes
  * are appended to it. Tracks the last vowel/consonant, whether it ends in a
@@ -92,7 +92,10 @@ export class Word {
    * for a couple of lexical exceptions ("et", "git").
    */
   softenLastConsonant(): void {
-    if (this.base.endsWith("rt") || this.base.endsWith("lt")) {
+    if (this.base.endsWith("rt") || this.base.endsWith("lt")) { // TODO: this skips "yoğurt" which it shouldn't
+      return;
+    }
+    if (SOFTENING_EXCEPTIONS.has(this.base)) {
       return;
     }
     if (this.numVowels < 2) {

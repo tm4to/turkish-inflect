@@ -7,12 +7,9 @@ import { Person, NounCase, VerbTense, normalizeNounCase, normalizeVerbTense, NOU
  * the underlying Word in place (appends the suffix via Word#addSuffix,
  * which itself applies consonant softening/devoicing as needed).
  */
-export function inflectNoun(input: string, mode: NounCase, person?: Person): string {
-  if (!input.length) { return "" };
-  const phrase = new Phrase(input);
+export function inflectNoun_phrase(phrase: Phrase, mode: NounCase, person?: Person): Phrase {
   let suffix = "";
   const word = phrase.lastWord;
-  if (!word) { return "" }
   switch (mode) {
     case "accusative": // belirtme: araba-yı
       suffix = generateVowel(word.lastVowel, true);
@@ -27,7 +24,12 @@ export function inflectNoun(input: string, mode: NounCase, person?: Person): str
   }
 
   word.addSuffix(suffix);
-  return word.base;
+  return phrase;
+}
+export function inflectNoun(input: string, mode: NounCase, person?: Person): string {
+  if (!input.length) { return "" };
+  const phrase = new Phrase(input);
+  return inflectNoun_phrase(phrase, mode, person).lastWord?.base ?? "";
 }
 
 /**
@@ -36,12 +38,11 @@ export function inflectNoun(input: string, mode: NounCase, person?: Person): str
  * etc.) also rewrite word.base directly to reflect stem changes before
  * appending the final suffix.
  */
-export function inflectVerb(input: string, tense: VerbTense, person?: Person): string {
-  if (!input.length) { return "" };
-  const phrase = new Phrase(input);
+
+export function inflectVerb_phrase(phrase: Phrase, tense: VerbTense, person: Person, options?: { negative?: boolean; question?: boolean; }): Phrase {
   let suffix = "";
   const word = phrase.lastWord;
-  if (!word) { return "" }
+  if (!word) { return phrase }
   const base = word.base;
   switch (tense) {
     case "present":
@@ -59,5 +60,11 @@ export function inflectVerb(input: string, tense: VerbTense, person?: Person): s
   }
 
   word.addSuffix(suffix);
-  return word.base;
+  return phrase;
+}
+
+export function inflectVerb(input: string, tense: VerbTense, person: Person): string {
+  if (!input.length) { return "" };
+  const phrase = new Phrase(input);
+  return inflectVerb_phrase(phrase, tense, person).lastWord?.base ?? "";
 }
