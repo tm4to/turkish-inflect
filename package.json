@@ -1,6 +1,6 @@
 {
   "name": "turkish-inflect",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Turkish noun and verb inflection: vowel harmony, consonant mutation, and case/tense suffixes.",
   "keywords": [
     "turkish",
