@@ -19,7 +19,7 @@ npm install turkish-inflect
 
 ## Usage / Kullanım
 
-```
+```js
 
 const tr = require("turkish-inflect");
 
