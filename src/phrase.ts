@@ -21,6 +21,9 @@ export class Phrase {
     this.words = splitted.map(e => new Word(e));
     //this.lastWord = this.words[this.words.length - 1];
     this.lastWord = this.words.at(-1)!;
+    // if (isLastWordVerb) {
+    //   this.lastWord.isVerb = true;
+    // }
   }
 
   appendPhrase(p: Phrase): void {

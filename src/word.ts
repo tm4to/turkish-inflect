@@ -1,4 +1,4 @@
-import { isVowel, isFrontVowel, isHardConsonant, isDiscontinuousHardConsonant } from "./utils";
+import { isVowel, isFrontVowel, isHardConsonant, isDiscontinuousHardConsonant, generateVowel } from "./utils";
 import { SOFTENING_EXCEPTIONS, VOWEL_DROP_STEMS } from "./irregulars";
 /**
  * Represents a single Turkish word and its phonological state as suffixes
@@ -7,20 +7,21 @@ import { SOFTENING_EXCEPTIONS, VOWEL_DROP_STEMS } from "./irregulars";
  * inflect it.
  */
 export class Word {
-  isVerb: boolean = false;
+  //isVerb: boolean = false;
   isProperNoun: boolean = false;
   endsWithVowel: boolean = false;
   isLastVowelFront: boolean = false;
   isLastConsHard: boolean = false;
   isLastConsDisc: boolean = false;
   numVowels: number = 0;
+  vowels: string[] = [];
   lastVowel: string = "";
   lastCons: string = "";
   base: string = "";
   suffixes: string[] = [];
 
-  constructor(str: string, isVerb: boolean = false) {
-    this.isVerb = isVerb;
+  constructor(str: string) {
+    //this.isVerb = isVerb;
     str = str.trim();
     let dunnoLastLetter = true;
     let dunnoLastVowel = true;
@@ -43,6 +44,7 @@ export class Word {
 
       if (isVowel(c)) {
         this.numVowels++;
+        this.vowels.push(c);
         if (dunnoLastLetter) {
           this.endsWithVowel = true;
         }
@@ -73,6 +75,7 @@ export class Word {
     this.base += c;
     this.lastVowel = c;
     this.numVowels++;
+    this.vowels.push(c);
     this.endsWithVowel = true;
     this.isLastVowelFront = isFrontVowel(c);
   }
@@ -137,6 +140,20 @@ export class Word {
     }
   }
 
+  narrowLastVowel(): void {
+    let newVowel;
+    if (this.numVowels < 2) {
+      newVowel = generateVowel(this.lastVowel, true);
+      this.lastVowel = newVowel;
+      this.vowels[this.numVowels - 1] = newVowel;
+    } else {
+      newVowel = generateVowel(this.vowels[this.vowels.length - 2] ?? "a", true);
+      this.lastVowel = newVowel;
+      this.vowels[this.numVowels - 1] = newVowel;
+    }
+    this.base = this.base.slice(0, -1) + newVowel;
+  }
+
   /**
    * Appends a raw suffix string to the word, applying consonant softening
    * (before a vowel-initial suffix, when applicable) and consonant
@@ -161,7 +178,7 @@ export class Word {
         }
         this.appendVowel(c);
       } else {
-        if (i === 0 && !this.endsWithVowel && this.isLastConsHard) {
+        if (i === 0 && !this.endsWithVowel && this.isLastConsHard) { // "seç" + "dim" -> "seç*t*im"
           switch (c) {
             case "G": case "g": c = "k"; break;
             case "D": case "d": c = "t"; break;

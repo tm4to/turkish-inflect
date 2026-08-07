@@ -163,7 +163,7 @@ describe("inflectNoun - edge cases", () => {
     expect(() => inflectNoun("ev", "wrongcase")).toThrow();
   });
 
-  test("capitalized proper nouns skip consonant softening", () => {
+  test("capitalized proper nouns should not have consonant softening", () => {
     // Word.isProperNoun is only ever set if the input string already ends
     // with a literal "'" character - nothing inserts one automatically, and
     // nothing in inflect.ts detects capitalization. Today inflectNoun("Ahmet",
@@ -244,48 +244,204 @@ describe("inflectVerb - full tense/person spec (not yet implemented)", () => {
   });
 });
 
-describe("inflectVerb - 'present' tense, 1s/2s: CURRENT actual behavior", () => {
-  // These pass today and guard against accidental regressions, but flag
-  // this clearly: the output doesn't match the progressive "yapıyorum"-style
-  // forms documented for "present" above. "eyim"/"ayım" (1s) and "s_n" (2s)
-  // look structurally like the imperative 1s/3s forms instead
-  // (imperative 1s "yapayım", imperative 3s "yapsın"), just filed under the
-  // wrong tense/person. Worth deciding: fix "present" to be progressive, or
-  // rename/move this logic under "imperative"?
-  test("inflectVerb('gel', 'present', '1s') => 'geleyim'", () => {
-    expect(inflectVerb("gel", "present", "1s")).toBe("geleyim");
+describe("inflectVerb - 'imperative' mode", () => {
+  test("inflectVerb('gel', 'imperative', '1s') => 'geleyim'", () => {
+    expect(inflectVerb("gel", "imperative", "1s")).toBe("geleyim");
   });
 
-  test("inflectVerb('gel', 'present', '2s') => 'gelsin'", () => {
-    expect(inflectVerb("gel", "present", "2s")).toBe("gelsin");
+  test("inflectVerb('gel', 'imperative', '2s') => 'gel'", () => {
+    expect(inflectVerb("gel", "imperative", "2s")).toBe("gel");
   });
 
-  test("inflectVerb('oku', 'present', '1s') => 'okuyayım' (vowel-ending stem, 'y' buffer)", () => {
-    expect(inflectVerb("oku", "present", "1s")).toBe("okuyayım");
+  test("inflectVerb('gel', 'imperative', '3s') => 'gelsin'", () => {
+    expect(inflectVerb("gel", "imperative", "3s")).toBe("gelsin");
   });
 
-  test.todo("3s/1p/2p/3p persons under 'present' are not handled by the switch - decide target forms once the 1s/2s semantics above are resolved");
+  test("inflectVerb('vur', 'imperative', '3p') => 'vursunlar'", () => {
+    expect(inflectVerb("vur", "imperative", "3p")).toBe("vursunlar");
+  });
+
+  test("inflectVerb('gör', 'imperative', '3p') => 'görsünler'", () => {
+    expect(inflectVerb("gör", "imperative", "3p")).toBe("görsünler");
+  });
+
+  test("inflectVerb('oku', 'imperative', '1s') => 'okuyayım' (vowel-ending stem, 'y' buffer)", () => {
+    expect(inflectVerb("oku", "imperative", "1s")).toBe("okuyayım");
+  });
+
+  test("inflectVerb('de', 'imperative', '1s') => 'diyeyim' (vowel narrowing)", () => {
+    expect(inflectVerb("de", "imperative", "1s")).toBe("diyeyim");
+  });
+});
+
+describe("inflectVerb - 'present'", () => {
+  test("inflectVerb('gel', 'present', '1s') => 'geliyorum'", () => {
+    expect(inflectVerb("gel", "present", "1s")).toBe("geliyorum");
+  });
+
+  test("inflectVerb('gel', 'present', '2s') => 'geliyorsun'", () => {
+    expect(inflectVerb("gel", "present", "2s")).toBe("geliyorsun");
+  });
+
+  test("inflectVerb('gel', 'present', '3s') => 'geliyor'", () => {
+    expect(inflectVerb("gel", "present", "3s")).toBe("geliyor");
+  });
+
+  test("inflectVerb('de', 'present', '1s') => 'diyorum' (vowel narrowing)", () => {
+    expect(inflectVerb("de", "present", "1s")).toBe("diyorum");
+  });
+
+  test("inflectVerb('başla', 'present', '1s') => 'başlıyorum' (vowel narrowing)", () => {
+    expect(inflectVerb("başla", "present", "1s")).toBe("başlıyorum");
+  });
+});
+
+describe("inflectVerb - 'aorist'", () => {
+  test("inflectVerb('gel', 'aorist', '1s') => 'gelirim'", () => {
+    expect(inflectVerb("gel", "aorist", "1s")).toBe("gelirim");
+  });
+
+  test("inflectVerb('gel', 'aorist', '2s') => 'gelirsin'", () => {
+    expect(inflectVerb("gel", "aorist", "2s")).toBe("gelirsin");
+  });
+
+  test("inflectVerb('gel', 'aorist', '3s') => 'gelir", () => {
+    expect(inflectVerb("gel", "aorist", "3s")).toBe("gelir");
+  });
+
+  test("inflectVerb('gel', 'aorist', '1p') => 'geliriz'", () => {
+    expect(inflectVerb("gel", "aorist", "1p")).toBe("geliriz");
+  });
+
+  test("inflectVerb('gel', 'aorist', '2p') => 'gelirsiniz'", () => {
+    expect(inflectVerb("gel", "aorist", "2p")).toBe("gelirsiniz");
+  });
+
+  test("inflectVerb('gel', 'aorist', '3p') => 'gelirler'", () => {
+    expect(inflectVerb("gel", "aorist", "3p")).toBe("gelirler");
+  });
+
+  test("inflectVerb('başla', 'aorist', '1s') => 'başlarım' (vowel narrowing)", () => {
+    expect(inflectVerb("başla", "aorist", "1s")).toBe("başlarım");
+  });
+});
+
+describe("inflectVerb - 'witnessedPast'", () => {
+  test("inflectVerb('gel', 'witnessedPast', '1s') => 'geldim'", () => {
+    expect(inflectVerb("gel", "witnessedPast", "1s")).toBe("geldim");
+  });
+
+  test("inflectVerb('gel', 'witnessedPast', '2s') => 'geldin'", () => {
+    expect(inflectVerb("gel", "witnessedPast", "2s")).toBe("geldin");
+  });
+
+  test("inflectVerb('gel', 'witnessedPast', '3s') => 'geldi", () => {
+    expect(inflectVerb("gel", "witnessedPast", "3s")).toBe("geldi");
+  });
+
+  test("inflectVerb('gel', 'witnessedPast', '1p') => 'geldik'", () => {
+    expect(inflectVerb("gel", "witnessedPast", "1p")).toBe("geldik");
+  });
+
+  test("inflectVerb('gel', 'witnessedPast', '2p') => 'geldiniz'", () => {
+    expect(inflectVerb("gel", "witnessedPast", "2p")).toBe("geldiniz");
+  });
+
+  test("inflectVerb('gel', 'witnessedPast', '3p') => 'geldiler'", () => {
+    expect(inflectVerb("gel", "witnessedPast", "3p")).toBe("geldiler");
+  });
+});
+
+describe("inflectVerb - 'inferentialPast'", () => {
+  test("inflectVerb('gel', 'inferentialPast', '1s') => 'gelmişim'", () => {
+    expect(inflectVerb("gel", "inferentialPast", "1s")).toBe("gelmişim");
+  });
+
+  test("inflectVerb('gel', 'inferentialPast', '2s') => 'gelmişsin'", () => {
+    expect(inflectVerb("gel", "inferentialPast", "2s")).toBe("gelmişsin");
+  });
+
+  test("inflectVerb('gel', 'inferentialPast', '3s') => 'gelmiş'", () => {
+    expect(inflectVerb("gel", "inferentialPast", "3s")).toBe("gelmiş");
+  });
+
+  test("inflectVerb('gel', 'inferentialPast', '1p') => 'gelmişiz'", () => {
+    expect(inflectVerb("gel", "inferentialPast", "1p")).toBe("gelmişiz");
+  });
+
+  test("inflectVerb('gel', 'inferentialPast', '2p') => 'gelmişsiniz'", () => {
+    expect(inflectVerb("gel", "inferentialPast", "2p")).toBe("gelmişsiniz");
+  });
+
+  test("inflectVerb('gel', 'inferentialPast', '3p') => 'gelmişler'", () => {
+    expect(inflectVerb("gel", "inferentialPast", "3p")).toBe("gelmişler");
+  });
+});
+
+describe("inflectVerb - 'future'", () => {
+  test("inflectVerb('gel', 'future', '1s') => 'geleceğim'", () => {
+    expect(inflectVerb("gel", "future", "1s")).toBe("geleceğim");
+  });
+
+  test("inflectVerb('gel', 'future', '2s') => 'geleceksin'", () => {
+    expect(inflectVerb("gel", "future", "2s")).toBe("geleceksin");
+  });
+
+  test("inflectVerb('gel', 'future', '3s') => 'gelecek'", () => {
+    expect(inflectVerb("gel", "future", "3s")).toBe("gelecek");
+  });
+
+  test("inflectVerb('gel', 'future', '1p') => 'geleceğiz'", () => {
+    expect(inflectVerb("gel", "future", "1p")).toBe("geleceğiz");
+  });
+
+  test("inflectVerb('gel', 'future', '2p') => 'geleceksiniz'", () => {
+    expect(inflectVerb("gel", "future", "2p")).toBe("geleceksiniz");
+  });
+
+  test("inflectVerb('gel', 'future', '3p') => 'gelecekler'", () => {
+    expect(inflectVerb("gel", "future", "3p")).toBe("gelecekler");
+  });
+
+  test("inflectVerb('de', 'future', '1s') => 'diyeceğim'", () => {
+    expect(inflectVerb("de", "future", "1s")).toBe("diyeceğim");
+  });
+
+});
+
+describe("inflectVerb - 'pastPerfect'", () => {
+  test("inflectVerb('gel', 'pastPerfect', '1s') => 'gelmiştim'", () => {
+    expect(inflectVerb("gel", "pastPerfect", "1s")).toBe("gelmiştim");
+  });
+  test("inflectVerb('dökül', 'pastPerfect', '1s') => 'dökülmüştüm'", () => {
+    expect(inflectVerb("dökül", "pastPerfect", "1s")).toBe("dökülmüştüm");
+  });
+
+  test("inflectVerb('gel', 'pastPerfect', '2s') => 'gelmiştin'", () => {
+    expect(inflectVerb("gel", "pastPerfect", "2s")).toBe("gelmiştin");
+  });
+
+  test("inflectVerb('gel', 'pastPerfect', '3s') => 'gelmişti'", () => {
+    expect(inflectVerb("gel", "pastPerfect", "3s")).toBe("gelmişti");
+  });
+
+  test("inflectVerb('gel', 'pastPerfect', '1p') => 'gelmiştik'", () => {
+    expect(inflectVerb("gel", "pastPerfect", "1p")).toBe("gelmiştik");
+  });
+
+  test("inflectVerb('gel', 'pastPerfect', '2p') => 'gelmiştiniz'", () => {
+    expect(inflectVerb("gel", "pastPerfect", "2p")).toBe("gelmiştiniz");
+  });
+
+  test("inflectVerb('gel', 'pastPerfect', '3p') => 'gelmişlerdi'", () => {
+    expect(inflectVerb("gel", "pastPerfect", "3p")).toBe("gelmişlerdi");
+  });
 });
 
 describe("inflectVerb - negation (not yet implemented)", () => {
-  // Two layers of gap here: inflectVerb_phrase accepts an `options` param
-  // but never reads it, AND the public inflectVerb(input, tense, person)
-  // wrapper doesn't even expose an options parameter at all - so this isn't
-  // reachable from the string-based API yet no matter what. Target forms
-  // once it is:
   //   gel + present(3s) negative -> "gelmiyor"
   //   git + present(3s) negative -> "gitmiyor"
   test.todo("inflectVerb exposes a negative/question option and applies it (e.g. gel -> gelmiyor)");
-});
-
-describe("inflectVerb - irregular verbs (not yet implemented)", () => {
-  test.skip("etmek witnessedPast: 'et' is a monosyllabic softening exception", () => {
-    expect(inflectVerb("et", "witnessedPast", "3s")).toBe("etti");
-  });
-
-  test.skip("gitmek future: t -> d mutation", () => {
-    expect(inflectVerb("git", "future", "3s")).toBe("gidecek");
-  });
 });
 
 // ---------------------------------------------------------------------------
@@ -293,12 +449,6 @@ describe("inflectVerb - irregular verbs (not yet implemented)", () => {
 // ---------------------------------------------------------------------------
 
 describe("inflectNoun / inflectVerb - alias input", () => {
-  // NOUN_CASE_ALIASES / VERB_TENSE_ALIASES / normalizeNounCase /
-  // normalizeVerbTense exist in cases.ts but aren't wired into inflectNoun
-  // or inflectVerb - both still only accept the canonical NounCase/VerbTense
-  // union, not NounCaseInput/VerbTenseInput. Once wired up, informal/Turkish
-  // alias names like "yönelme" (dative) or "miş" (inferentialPast) should
-  // work as direct inputs.
   test.todo("inflectNoun accepts alias case names (e.g. 'yönelme' for dative)");
   test.todo("inflectVerb accepts alias tense names (e.g. 'miş' for inferentialPast)");
 });

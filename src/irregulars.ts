@@ -109,3 +109,19 @@ export const VOWEL_DROP_STEMS: ReadonlyMap<string, string> = new Map([
     ["kayın", "kayn"],
     ["ufuk", "ufk"],
 ]);
+
+export const NARROW_AORIST_EXCEPTIONS: ReadonlySet<string> = new Set([
+    "ol",   // olur  (becomes / happens)
+    "al",   // alır  (takes / buys)
+    "bil",  // bilir (knows)
+    "bul",  // bulur (finds)
+    "dur",  // durur (stops / stands)
+    "gel",  // gelir (comes)
+    "gör",  // görür (sees)
+    "kal",  // kalır (stays / remains)
+    "san",  // sanır (supposes / deems)
+    "ver",  // verir (gives)
+    "vur",  // vurur (hits / strikes)
+    "var",  // varır (arrives / reaches)
+    "öl"    // ölür  (dies)
+]);

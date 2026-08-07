@@ -1,7 +1,7 @@
 import { Phrase } from "./phrase";
-import { generateVowel } from "./utils";
+import { generateVowel, isFrontVowel } from "./utils";
 import { Person, NounCase, VerbTense, normalizeNounCase, normalizeVerbTense, VerbTenseInput, NounCaseInput, VERB_TENSE_ALIASES, NOUN_CASE_ALIASES } from "./cases";
-
+import { NARROW_AORIST_EXCEPTIONS } from "./irregulars";
 /**
  * Inflects the last word of a Phrase for the given nominal case, mutating
  * the underlying Word in place (appends the suffix via Word#addSuffix,
@@ -129,20 +129,142 @@ export function inflectNoun(inputPhrase: string, inputMode: NounCaseInput, perso
 
 export function inflectVerb_phrase(phrase: Phrase, tense: VerbTense, person: Person, _options?: { negative?: boolean; question?: boolean; }): Phrase {
   let suffix = "";
+  let suffixVowel = "";
   const word = phrase.lastWord;
-  if (!word) { return phrase }
-  const base = word.base;
   switch (tense) {
-    case "present":
+    case "imperative":
       switch (person) {
         case "1s":
-          if (base.length === 2 && base[1] === "e") { word.base = base[0] + "i"; }
+          if (word.base.length === 2 && word.base[1] === "e") { // de -> diyeyim, ye -> yiyeyim
+            word.narrowLastVowel();
+          }
           if (word.endsWithVowel) { suffix = "y"; }
           suffix += word.isLastVowelFront ? "eyim" : "ayım";
           break;
-        case "2s":
+        case "3s":
           suffix = "s" + generateVowel(word.lastVowel, true) + "n";
           break;
+        case "1p":
+          if (word.base.length === 2 && word.base[1] === "e") {
+            word.narrowLastVowel();
+          }
+          if (word.endsWithVowel) { suffix = "y"; }
+          suffix += word.isLastVowelFront ? "elim" : "alım";
+          break;
+        case "2p":
+          if (word.base.length === 2 && word.base[1] === "e") {
+            word.narrowLastVowel();
+          }
+          if (word.endsWithVowel) { suffix = "y"; }
+          suffix += word.isLastVowelFront ? "in" : "ın";
+          break;
+        case "3p":
+          const suffixVowel = generateVowel(word.lastVowel, true);
+          suffix += "s";
+          suffix += suffixVowel;
+          suffix += "nl";
+          suffix += isFrontVowel(suffixVowel) ? "e" : "a";
+          suffix += "r";
+          break;
+      }
+      break;
+    case "present":
+      if (word.endsWithVowel) { // de -> diyorum, ye -> yiyorum
+        word.narrowLastVowel();
+      } else {
+        suffix = generateVowel(word.lastVowel, true);
+      }
+      suffix += "yor";
+      switch (person) {
+        case "1s": suffix += "um"; break;
+        case "2s": suffix += "sun"; break;
+        case "1p": suffix += "uz"; break;
+        case "2p": suffix += "sunuz"; break;
+        case "3p": suffix += "lar"; break;
+      }
+      break;
+    case "aorist": // genis
+      if (word.numVowels < 2) {
+        if (NARROW_AORIST_EXCEPTIONS.has(word.base)) {
+          suffixVowel = generateVowel(word.lastVowel, true);
+        }
+        else {
+          suffixVowel = word.isLastVowelFront ? "e" : "a";
+        }
+      } else {
+        suffixVowel = generateVowel(word.lastVowel, true);
+      }
+      suffix = word.endsWithVowel ? "r" : (suffixVowel + "r");
+      switch (person) {
+        case "1s": suffix += generateVowel(suffixVowel, true) + "m"; break;
+        case "2s": suffix += "s" + generateVowel(suffixVowel, true) + "n"; break;
+        case "1p": suffix += generateVowel(suffixVowel, true) + "z"; break;
+        case "2p": suffix += "s" + generateVowel(suffixVowel, true) + "n" + generateVowel(suffixVowel, true) + "z"; break;
+        case "3p": suffix += "l" + (isFrontVowel(suffixVowel) ? "e" : "a") + "r"; break;
+      }
+      break;
+    case "witnessedPast":
+      suffixVowel = generateVowel(word.lastVowel, true);
+      suffix = "d" + suffixVowel;
+      switch (person) {
+        case "1s": suffix += "m"; break;
+        case "2s": suffix += "n"; break;
+        case "1p": suffix += "k"; break;
+        case "2p":
+          suffix += "n";
+          suffix += suffixVowel;
+          suffix += "z";
+          break;
+        case "3p": suffix += "l";
+          suffix += isFrontVowel(suffixVowel) ? "e" : "a";
+          suffix += "r";
+          break;
+      }
+      break;
+    case "inferentialPast":
+      suffixVowel = generateVowel(word.lastVowel, true);
+      suffix = "m" + suffixVowel + "ş";
+      switch (person) {
+        case "1s": suffix += suffixVowel + "m"; break;
+        case "2s": suffix += "s" + suffixVowel + "n"; break;
+        case "1p": suffix += suffixVowel + "z"; break;
+        case "2p":
+          suffix += "s";
+          suffix += suffixVowel;
+          suffix += "n";
+          suffix += suffixVowel;
+          suffix += "z";
+          break;
+        case "3p": suffix += "l";
+          suffix += isFrontVowel(suffixVowel) ? "e" : "a";
+          suffix += "r";
+          break;
+      }
+      break;
+    case "future":
+      if (word.base.length === 2 && word.base[1] === "e") { word.base = word.base[0] + "i" }
+      if (word.endsWithVowel) { suffix = "y" }
+      const isFront = word.isLastVowelFront;
+      suffix += isFront ? "ece" : "aca";
+      switch (person) {
+        case "1s": suffix += isFront ? "ğim" : "ğım"; break;
+        case "2s": suffix += isFront ? "ksin" : "ksın"; break;
+        case "3s": suffix += "k"; break;
+        case "1p": suffix += isFront ? "ğiz" : "ğız"; break;
+        case "2p": suffix += isFront ? "ksiniz" : "ksınız"; break;
+        case "3p": suffix += isFront ? "kler" : "klar"; break;
+      }
+      break;
+    case "pastPerfect":
+      suffixVowel = generateVowel(word.lastVowel, true);
+      suffix = "m" + suffixVowel + "ş";
+      switch (person) {
+        case "1s": suffix += "t" + suffixVowel + "m"; break;
+        case "2s": suffix += "t" + suffixVowel + "n"; break;
+        case "3s": suffix += "t" + suffixVowel; break;
+        case "1p": suffix += "t" + suffixVowel + "k"; break;
+        case "2p": suffix += "t" + suffixVowel + "n" + suffixVowel + "z"; break;
+        case "3p": suffix += isFrontVowel(suffixVowel) ? "lerdi" : "lardı"; break;
       }
       break;
   }

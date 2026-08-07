@@ -23,12 +23,12 @@ export type NounCase =
     | "plural"; // araba-lar
 
 export type VerbTense =
+    | "imperative" // yapayım, yap, yapsın
+    | "imperative_2" // yapim, yap, yapsın
+    | "imperative_3" // yapam, yap, yapsın    
     | "present" // yapıyorum, yapıyorsun, yapıyor
     | "present_2" // yapıyom, yapıyon, yapıyo
     | "present_3" // yapıom, yapıon, yapıo
-    | "imperative" // yapayım, yap, yapsın
-    | "imperative_2" // yapim, yap, yapsın
-    | "imperative_3" // yapam, yap, yapsın
     | "aorist" // yaparım, yaparsın, yapar
     | "witnessedPast" // yaptım, yaptın, yaptı
     | "inferentialPast" // yapmışım, yapmışsın, yapmış
