@@ -1,5 +1,8 @@
 // Character-level helpers for Turkish vowel harmony and consonant classification.
 
+//import { Y_BUFFER_STEMS } from "./irregulars";
+//import type { Word } from "./word";
+
 export function isVowel(c: string): boolean {
   switch (c) {
     case "A": case "E": case "I": case "İ": case "O": case "Ö": case "U": case "Ü":
@@ -67,3 +70,7 @@ export function generateVowel(lastVowel: string, isAccusative: boolean = true): 
     }
   }
 }
+
+// export function getBufferConsonant(word: Word): string {
+//   return (word.isVerb || word.suffixes.length > 0 || Y_BUFFER_STEMS.has(word.base)) ? "y" : "n";
+// }

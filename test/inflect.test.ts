@@ -40,59 +40,103 @@ describe("inflectNoun - accusative (implemented)", () => {
 });
 
 describe("inflectNoun - accusative (known gap: vowel drop / ünlü düşmesi)", () => {
-  // Word has no logic for dropping the second-syllable vowel of words like
-  // ağız/burun/akıl before a vowel-initial suffix. Today these produce
-  // "ağızı" / "burunu" / "akılı" instead. Softening (p/ç/t/k -> b/c/d/ğ)
-  // is unaffected by this gap and already works correctly on its own.
   const cases: [word: string, expected: string][] = [
     ["ağız", "ağzı"],
     ["burun", "burnu"],
     ["akıl", "aklı"],
   ];
 
-  test.skip.each(cases)("inflectNoun(%s, 'accusative') => %s", (word, expected) => {
+  test.each(cases)("inflectNoun(%s, 'accusative') => %s", (word, expected) => {
     expect(inflectNoun(word, "accusative")).toBe(expected);
   });
 });
 
-describe("inflectNoun - other cases (not yet implemented)", () => {
-  // inflectNoun_phrase's switch only has an "accusative" branch. Every other
-  // NounCase falls through with an empty suffix and returns the word
-  // unchanged. These are the correct target outputs once each case lands.
-  const cases: [mode: NounCase, word: string, expected: string][] = [
-    ["dative", "ev", "eve"],
-    ["dative", "kol", "kola"],
-    ["dative", "araba", "arabaya"],
-    ["dative", "kitap", "kitaba"],
-    ["dative", "su", "suya"],
-    ["dative", "ağız", "ağza"], // also needs vowel drop
-
-    ["locative", "ev", "evde"],
-    ["locative", "kol", "kolda"],
-    ["locative", "kitap", "kitapta"], // voiceless consonant -> "t" not "d"
-    ["locative", "araba", "arabada"],
-
-    ["ablative", "ev", "evden"],
-    ["ablative", "kol", "koldan"],
-    ["ablative", "kitap", "kitaptan"],
-    ["ablative", "araba", "arabadan"],
-
-    ["genitive", "ev", "evin"],
-    ["genitive", "kol", "kolun"],
-    ["genitive", "araba", "arabanın"], // "n" buffer
-    ["genitive", "kitap", "kitabın"],
-    ["genitive", "su", "suyun"],
-
-    ["plural", "ev", "evler"],
-    ["plural", "kol", "kollar"],
-    ["plural", "araba", "arabalar"],
-    ["plural", "göz", "gözler"],
-
-    ["possessive", "araba", "arabası"], // (onun) araba-s-ı, 3rd person singular
+describe("inflectNoun - dative", () => {
+  const cases: [word: string, expected: string][] = [
+    ["ev", "eve"],
+    ["kol", "kola"],
+    ["araba", "arabaya"],
+    ["kitap", "kitaba"],
+    ["su", "suya"],
   ];
 
-  test.skip.each(cases)("inflectNoun(%s, %s) => %s", (mode, word, expected) => {
-    expect(inflectNoun(word, mode)).toBe(expected);
+  test.each(cases)("inflectNoun(%s, 'dative') => %s", (word, expected) => {
+    expect(inflectNoun(word, "dative")).toBe(expected);
+  });
+
+  test("inflectNoun('ağız', 'dative') => 'ağza'", () => {
+    expect(inflectNoun("ağız", "dative")).toBe("ağza");
+  });
+});
+
+describe("inflectNoun - locative", () => {
+  const cases: [word: string, expected: string][] = [
+    ["ev", "evde"],
+    ["kol", "kolda"],
+    ["kitap", "kitapta"], // voiceless consonant -> "t" not "d"
+    ["araba", "arabada"],
+  ];
+
+  test.each(cases)("inflectNoun(%s, 'locative') => %s", (word, expected) => {
+    expect(inflectNoun(word, "locative")).toBe(expected);
+  });
+});
+
+describe("inflectNoun - ablative", () => {
+  const cases: [word: string, expected: string][] = [
+    ["ev", "evden"],
+    ["kol", "koldan"],
+    ["kitap", "kitaptan"],
+    ["araba", "arabadan"],
+  ];
+
+  test.each(cases)("inflectNoun(%s, 'ablative') => %s", (word, expected) => {
+    expect(inflectNoun(word, "ablative")).toBe(expected);
+  });
+});
+
+describe("inflectNoun - genitive", () => {
+  const cases: [word: string, expected: string][] = [
+    ["ev", "evin"],
+    ["kol", "kolun"],
+    ["araba", "arabanın"], // "n" buffer
+    ["kitap", "kitabın"],
+    ["su", "suyun"],
+  ];
+
+  test.each(cases)("inflectNoun(%s, 'genitive') => %s", (word, expected) => {
+    expect(inflectNoun(word, "genitive")).toBe(expected);
+  });
+});
+
+describe("inflectNoun - plural", () => {
+  const cases: [word: string, expected: string][] = [
+    ["ev", "evler"],
+    ["kol", "kollar"],
+    ["araba", "arabalar"],
+    ["göz", "gözler"],
+  ];
+
+  test.each(cases)("inflectNoun(%s, 'plural') => %s", (word, expected) => {
+    expect(inflectNoun(word, "plural")).toBe(expected);
+  });
+});
+
+describe("inflectNoun - possessive", () => {
+  test("inflectNoun('araba', 'possessive', '3s') => 'arabası'", () => {
+    expect(inflectNoun("araba", "possessive", "3s")).toBe("arabası");
+  });
+  test("inflectNoun('ağaç', 'possessive', '1s') => 'ağacım'", () => {
+    expect(inflectNoun("ağaç", "possessive", "1s")).toBe("ağacım");
+  });
+  test("inflectNoun('ağaç', 'possessive', '3s') => 'ağacı'", () => {
+    expect(inflectNoun("ağaç", "possessive", "3s")).toBe("ağacı");
+  });
+  test("inflectNoun('ağaç', 'possessive', '3p') => 'ağaçlar'", () => {
+    expect(inflectNoun("ağaç", "possessive", "3p")).toBe("ağaçları");
+  });
+  test("inflectNoun('su', 'possessive', '3p') => 'suları'", () => {
+    expect(inflectNoun("su", "possessive", "3p")).toBe("suları");
   });
 });
 
@@ -114,18 +158,18 @@ describe("inflectNoun - edge cases", () => {
     expect(() => inflectNoun(" ", "accusative")).toThrow();
   });
 
-  test("rejects unsupported case names at the type level", () => {
+  test("rejects unsupported case names at the type level and at runtime", () => {
     // @ts-expect-error - "wrongcase" is not a valid NounCase
-    inflectNoun("ev", "wrongcase");
+    expect(() => inflectNoun("ev", "wrongcase")).toThrow();
   });
 
-  test.skip("capitalized proper nouns get an apostrophe and skip consonant softening", () => {
+  test("capitalized proper nouns skip consonant softening", () => {
     // Word.isProperNoun is only ever set if the input string already ends
     // with a literal "'" character - nothing inserts one automatically, and
     // nothing in inflect.ts detects capitalization. Today inflectNoun("Ahmet",
     // "accusative") softens t->d same as any common noun and produces
     // "Ahmedi", not "Ahmet'i".
-    expect(inflectNoun("Ahmet", "accusative")).toBe("Ahmet'i");
+    expect(inflectNoun("Ahmet'", "accusative")).toBe("Ahmet'i");
   });
 });
 

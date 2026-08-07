@@ -1,5 +1,5 @@
 import { isVowel, isFrontVowel, isHardConsonant, isDiscontinuousHardConsonant } from "./utils";
-import { SOFTENING_EXCEPTIONS } from "./irregulars";
+import { SOFTENING_EXCEPTIONS, VOWEL_DROP_STEMS } from "./irregulars";
 /**
  * Represents a single Turkish word and its phonological state as suffixes
  * are appended to it. Tracks the last vowel/consonant, whether it ends in a
@@ -7,6 +7,7 @@ import { SOFTENING_EXCEPTIONS } from "./irregulars";
  * inflect it.
  */
 export class Word {
+  isVerb: boolean = false;
   isProperNoun: boolean = false;
   endsWithVowel: boolean = false;
   isLastVowelFront: boolean = false;
@@ -18,7 +19,8 @@ export class Word {
   base: string = "";
   suffixes: string[] = [];
 
-  constructor(str: string) {
+  constructor(str: string, isVerb: boolean = false) {
+    this.isVerb = isVerb;
     str = str.trim();
     let dunnoLastLetter = true;
     let dunnoLastVowel = true;
@@ -126,6 +128,15 @@ export class Word {
     this.base = this.base.slice(0, -1) + c;
   }
 
+  dropIrregularVowel(): void {
+    const dropped = VOWEL_DROP_STEMS.get(this.base);
+    if (dropped) {
+      this.base = dropped;
+      // lastCons/isLastConsHard/isLastConsDisc are unchanged — same final
+      // consonant either way, just the internal vowel is gone.
+    }
+  }
+
   /**
    * Appends a raw suffix string to the word, applying consonant softening
    * (before a vowel-initial suffix, when applicable) and consonant
@@ -139,8 +150,14 @@ export class Word {
       let c = str[i];
       if (!c) { continue; }
       if (isVowel(c)) {
-        if (i === 0 && !this.isProperNoun && !this.endsWithVowel && this.isLastConsDisc) {
-          this.softenLastConsonant();
+        // if (i === 0 && !this.isProperNoun && !this.endsWithVowel && this.isLastConsDisc) {
+        //   this.softenLastConsonant();
+        // }
+        if (i === 0 && !this.isProperNoun && !this.endsWithVowel) {
+          this.dropIrregularVowel();
+          if (this.isLastConsDisc) {
+            this.softenLastConsonant();
+          }
         }
         this.appendVowel(c);
       } else {
