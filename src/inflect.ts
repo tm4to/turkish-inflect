@@ -100,6 +100,12 @@ export function inflectNoun_phrase(phrase: Phrase, mode: NounCase, person?: Pers
     case "plural":
       suffix = "l" + generateVowel(word.lastVowel, false) + "r";
       break;
+    case "instrumental":
+      if (word.endsWithVowel) {
+        suffix = "y";
+      }
+      suffix += isFrontVowel(word.lastVowel) ? "le" : "la";
+      break;
   }
 
   word.addSuffix(suffix);

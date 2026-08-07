@@ -20,7 +20,8 @@ export type NounCase =
     | "ablative" // araba-dan
     | "genitive" // araba-n-ın
     | "possessive" // (onun) araba-s-ı
-    | "plural"; // araba-lar
+    | "plural" // araba-lar
+    | "instrumental" // araba-yla
 
 export type VerbTense =
     | "imperative" // yapayım, yap, yapsın
@@ -85,6 +86,10 @@ export const NOUN_CASE_ALIASES = {
     "çoğul": "plural",
     "ler": "plural",
     "lar": "plural",
+
+    "instrumental": "instrumental",
+    "le": "instrumental",
+    "la": "instrumental",
 } as const satisfies Record<string, NounCase>;
 
 export const VERB_TENSE_ALIASES = {

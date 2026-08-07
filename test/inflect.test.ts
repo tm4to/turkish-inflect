@@ -122,6 +122,17 @@ describe("inflectNoun - plural", () => {
   });
 });
 
+describe("inflectNoun - instrumental", () => {
+  const cases: [word: string, expected: string][] = [
+    ["ev", "evle"],
+    ["kapı", "kapıyla"]
+  ];
+
+  test.each(cases)("inflectNoun(%s, 'instrumental') => %s", (word, expected) => {
+    expect(inflectNoun(word, "instrumental")).toBe(expected);
+  });
+});
+
 describe("inflectNoun - possessive", () => {
   test("inflectNoun('araba', 'possessive', '3s') => 'arabası'", () => {
     expect(inflectNoun("araba", "possessive", "3s")).toBe("arabası");
