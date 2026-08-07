@@ -58,29 +58,21 @@ export const NOUN_CASE_ALIASES = {
     "bulunma": "locative",
     "de": "locative",
     "da": "locative",
-    "te": "locative",
-    "ta": "locative",
 
     "ablative": "ablative",
     "çıkma": "ablative",
     "den": "ablative",
     "dan": "ablative",
-    "ten": "ablative",
-    "tan": "ablative",
 
     "genitive": "genitive",
     "tamlayan": "genitive",
     "in": "genitive",
     "ın": "genitive",
-    "un": "genitive",
-    "ün": "genitive",
 
     "possessive": "possessive",
     "iyelik": "possessive",
     "si": "possessive",
     "sı": "possessive",
-    "su": "possessive",
-    "sü": "possessive",
 
     "plural": "plural",
     "çoğul": "plural",
@@ -90,6 +82,7 @@ export const NOUN_CASE_ALIASES = {
     "instrumental": "instrumental",
     "le": "instrumental",
     "la": "instrumental",
+    "ile": "instrumental",
 } as const satisfies Record<string, NounCase>;
 
 export const VERB_TENSE_ALIASES = {
@@ -113,8 +106,6 @@ export const VERB_TENSE_ALIASES = {
 
     "past": "witnessedPast",
     "witnessedPast": "witnessedPast",
-    "di_geçmiş": "witnessedPast",
-    "dı_geçmiş": "witnessedPast",
     "dı": "witnessedPast",
     "di": "witnessedPast",
     "du": "witnessedPast",
