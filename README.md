@@ -37,6 +37,10 @@ console.log(tr.inflectNoun(noun, "possessive", "1s")); // "kitabım"
 console.log(tr.inflectNoun(noun, "possessive", "1p")); // "kitabımız"
 console.log(tr.inflectNoun(noun, "possessive", "3p")); // "kitapları"
 
+// can add compound suffixes
+const noun2 = tr.inflectNoun(noun, "plural"); // "kitaplar"
+console.log(tr.inflectNoun(noun2, "possessive", "1s")); // "kitaplarım"
+
 // end proper nouns with an apostrophe:
 const properNoun = "Ahmet'";
 console.log(tr.inflectNoun(properNoun, "i")); // "Ahmet'i"
