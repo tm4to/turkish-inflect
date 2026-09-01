@@ -18,16 +18,16 @@
     "nlp",
     "turkish-nlp"
   ],
-  "homepage": "https://github.com/f-gee/turkish-inflect#readme",
+  "homepage": "https://github.com/tm4to/turkish-inflect#readme",
   "bugs": {
-    "url": "https://github.com/f-gee/turkish-inflect/issues"
+    "url": "https://github.com/tm4to/turkish-inflect/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/f-gee/turkish-inflect.git"
+    "url": "git+https://github.com/tm4to/turkish-inflect.git"
   },
   "license": "MIT",
-  "author": "F Gee",
+  "author": "tm4to",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
